@@ -330,14 +330,6 @@ hr{border:none;border-top:1px solid var(--border-soft)}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 .modal-title{font-family:var(--fs);font-size:1.2rem;color:var(--ink);margin-bottom:16px}
 
-/* ── AI CHAT ── */
-#screen-ai{padding-bottom:calc(var(--sb) + 80px)}
-.ai-bubble{max-width:82%;padding:12px 16px;border-radius:18px;font-family:var(--fb);font-size:.88rem;line-height:1.6}
-.ai-bubble.user{align-self:flex-end;background:var(--rose);color:#fff;border-bottom-right-radius:4px}
-.ai-bubble.assistant{align-self:flex-start;background:var(--cream);border:1.5px solid var(--border);color:var(--ink-soft);border-bottom-left-radius:4px;font-style:italic}
-.ai-bubble.thinking{align-self:flex-start;background:var(--cream2);border:1px dashed var(--border);color:var(--dust);font-style:italic;font-size:.82rem}
-.ai-bubble.error{background:var(--rose-light);border:1px solid var(--rose);color:#7a3a2a;font-style:normal;font-size:.82rem}
-
 /* ── CONFIRM OVERLAY ── */
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(44,33,24,.6);z-index:400;align-items:center;justify-content:center;padding:22px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .confirm-overlay.open{display:flex}
@@ -654,56 +646,12 @@ hr{border:none;border-top:1px solid var(--border-soft)}
 </div>
 
 <!-- ══════════════════════════════════════
-     AI CHAT SCREEN
-══════════════════════════════════════ -->
-<div id="screen-ai" class="screen">
-  <div class="day-header">
-    <h2>Limaji ✦</h2>
-    <span class="date-badge" id="ai-ist-time">—</span>
-  </div>
-  <div class="gap-6"></div>
-  <p style="font-family:var(--fb);font-style:italic;font-size:.82rem;color:var(--dust);line-height:1.6">
-    He knows your day, your energy, your courses.<br>Ask him anything.
-  </p>
-
-  <!-- API key setup -->
-  <div id="ai-setup-block" style="display:none">
-    <div class="gap-16"></div>
-    <div class="card">
-      <div style="font-family:var(--fs);font-size:1rem;color:var(--ink);margin-bottom:8px">Set up your assistant</div>
-      <p style="font-family:var(--fb);font-style:italic;font-size:.8rem;color:var(--dust);line-height:1.6;margin-bottom:14px">
-        Paste your free Gemini API key below. Get one at <span style="color:var(--blue)">aistudio.google.com</span> — it's free, no card needed.
-      </p>
-      <input class="text-input" id="gemini-key-input" placeholder="Paste API key here…" style="width:100%;font-size:.82rem"/>
-      <div class="gap-10"></div>
-      <button class="btn btn-primary btn-small" onclick="saveGeminiKey()">Save &amp; activate ✦</button>
-    </div>
-  </div>
-
-  <!-- Chat messages -->
-  <div class="gap-16"></div>
-  <div id="ai-messages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:200px;max-height:52vh;padding-bottom:8px"></div>
-
-  <!-- Input row -->
-  <div class="gap-12"></div>
-  <div style="display:flex;gap:8px;align-items:flex-end">
-    <textarea id="ai-input" class="daily-note-input" placeholder="Ask anything…" rows="2" style="flex:1;min-height:48px;resize:none"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMessage()}"></textarea>
-    <button class="btn btn-primary" style="width:auto;padding:12px 18px;flex-shrink:0;height:48px" onclick="sendAiMessage()">↑</button>
-  </div>
-  <div class="gap-6"></div>
-  <button class="btn btn-ghost" style="font-size:.72rem" onclick="clearAiChat()">Clear chat</button>
-  <div class="gap-8"></div>
-</div>
-
-<!-- ══════════════════════════════════════
      BOTTOM NAV
 ══════════════════════════════════════ -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <button class="nav-btn active" id="nav-flow" onclick="navTo('flow')"><span class="nav-icon">🌸</span>My Day</button>
   <button class="nav-btn" id="nav-courses" onclick="navTo('courses')"><span class="nav-icon">📖</span>Courses</button>
   <button class="nav-btn" id="nav-history" onclick="navTo('history')"><span class="nav-icon">🕯️</span>History</button>
-  <button class="nav-btn" id="nav-ai" onclick="navTo('ai')"><span class="nav-icon">✨</span>Limaji</button>
   <button class="nav-btn" id="nav-settings" onclick="navTo('settings')"><span class="nav-icon">⚙️</span>Settings</button>
 </nav>
 
@@ -782,85 +730,8 @@ const DEFAULT_STATE = {
 
   // courses (permanent)
   courses: {
-    manipal: { name:'Manipal BBA', emoji:'🎓', lessons:[
-      'Business Communication — Week 1','Business Communication — Week 2','Business Communication — Week 3',
-      'Principles of Management — Week 1','Principles of Management — Week 2','Principles of Management — Week 3',
-      'Business Mathematics — Week 1','Business Mathematics — Week 2','Business Mathematics — Week 3',
-      'Financial Accounting — Week 1','Financial Accounting — Week 2','Financial Accounting — Week 3',
-      'Business Economics — Week 1','Business Economics — Week 2','Business Economics — Week 3',
-      'Organisational Behaviour — Week 1','Organisational Behaviour — Week 2',
-      'Introduction to IT — Week 1','Introduction to IT — Week 2',
-    ], current:0 },
-    coursera_adobe: { name:'Adobe Content Creator', emoji:'🎨', lessons:[
-      'Welcome & Course Overview',
-      'Understanding Your Creative Identity',
-      'Building Your Content Strategy',
-      'Photography Fundamentals for Creators',
-      'Graphic Design Basics in Adobe Express',
-      'Creating Social Media Graphics',
-      'Video Content Basics',
-      'Editing with Adobe Premiere Rush',
-      'Audio for Creators',
-      'Building Your Portfolio',
-      'Monetisation & Brand Partnerships',
-      'Launching Your Creative Career',
-    ], current:6 },
-    coursera_excel: { name:'Microsoft Excel', emoji:'📊', lessons:[
-      'Excel Interface & Navigation',
-      'Entering & Formatting Data',
-      'Basic Formulas & Functions',
-      'SUM, AVERAGE, COUNT Functions',
-      'IF & Logical Functions',
-      'VLOOKUP & HLOOKUP',
-      'Charts & Data Visualisation',
-      'PivotTables Basics',
-      'PivotCharts',
-      'Data Validation & Conditional Formatting',
-      'Working with Multiple Sheets',
-      'Final Project',
-    ], current:0 },
-    coursera_social: { name:'Meta Social Media Marketing', emoji:'📱', lessons:[
-      'Introduction to Social Media Marketing',
-      'The Landscape of Social Media',
-      'Content Marketing Fundamentals',
-      'Facebook & Instagram for Business',
-      'Creating Engaging Content',
-      'Social Media Advertising Basics',
-      'Paid Campaigns on Meta',
-      'Analytics & Insights',
-      'Building a Brand Voice',
-      'Community Management',
-      'Campaign Strategy',
-      'Capstone Project',
-    ], current:0 },
-    coursera_soft: { name:'People & Soft Skills', emoji:'🤝', lessons:[
-      'Introduction to Soft Skills',
-      'Communication in the Workplace',
-      'Active Listening',
-      'Teamwork & Collaboration',
-      'Conflict Resolution',
-      'Emotional Intelligence',
-      'Time Management',
-      'Adaptability & Resilience',
-      'Leadership Fundamentals',
-      'Professional Etiquette',
-      'Networking Skills',
-      'Final Assessment',
-    ], current:0 },
-    coursera_sap: { name:'SAP Business Analyst', emoji:'💼', lessons:[
-      'Introduction to SAP & ERP',
-      'SAP Navigation & Interface',
-      'Business Processes Overview',
-      'SAP Financial Accounting (FI)',
-      'SAP Controlling (CO)',
-      'SAP Sales & Distribution (SD)',
-      'SAP Materials Management (MM)',
-      'SAP Human Resources (HR)',
-      'Business Requirements & Documentation',
-      'Stakeholder Management',
-      'SAP Implementation Lifecycle',
-      'Case Study & Final Project',
-    ], current:1 },
+    manipal:  { name:'Manipal',  emoji:'🎓', lessons:[], current:0 },
+    coursera: { name:'Coursera', emoji:'💻', lessons:[], current:0 },
     udemy:    { name:'Udemy',    emoji:'🎬', lessons:[], current:0 },
     unlox:    { name:'Unlox',    emoji:'🔓', lessons:[], current:0 },
   },
@@ -1240,15 +1111,14 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(`screen-${name}`).classList.add('active');
   const nav = document.getElementById('bottom-nav');
-  const showNav = ['flow','courses','history','settings','ai'].includes(name);
+  const showNav = ['flow','courses','history','settings'].includes(name);
   nav.style.display = showNav ? 'flex' : 'none';
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const navMap = { flow:'nav-flow', courses:'nav-courses', history:'nav-history', settings:'nav-settings', ai:'nav-ai' };
+  const navMap = { flow:'nav-flow', courses:'nav-courses', history:'nav-history', settings:'nav-settings' };
   if (navMap[name]) document.getElementById(navMap[name]).classList.add('active');
   if (name === 'courses') buildCoursesScreen();
   if (name === 'history') buildHistoryScreen();
   if (name === 'settings') buildSettingsScreen();
-  if (name === 'ai') buildAiScreen();
 }
 function navTo(name) {
   if (name === 'flow') buildFlowScreen();
@@ -1942,157 +1812,6 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// ─────────────────────────────────────────────────────────────
-// ✦ AI ASSISTANT — Gemini (free tier)
-// ─────────────────────────────────────────────────────────────
-let aiChatHistory = [];  // { role, parts:[{text}] }
-
-function getGeminiKey() {
-  return localStorage.getItem('myday_gemini_key') || '';
-}
-function saveGeminiKey() {
-  const val = document.getElementById('gemini-key-input').value.trim();
-  if (!val) return;
-  localStorage.setItem('myday_gemini_key', val);
-  document.getElementById('ai-setup-block').style.display = 'none';
-  showToast('Assistant activated ✦');
-  buildAiScreen();
-  addAiBubble('assistant', "Hello, I'm here. Tell me how you're feeling today, or ask me anything about your courses, your day, or anything at all.");
-}
-
-function buildAiScreen() {
-  // IST clock
-  document.getElementById('ai-ist-time').textContent = istTimeStr();
-
-  const key = getGeminiKey();
-  const setupBlock = document.getElementById('ai-setup-block');
-  if (!key) {
-    setupBlock.style.display = 'block';
-    // Show welcome if no messages yet
-    if (!aiChatHistory.length) {
-      const msgs = document.getElementById('ai-messages');
-      msgs.innerHTML = '';
-      addAiBubble('assistant', "Hi ✦ I'm Limaji, your personal assistant. To activate me, paste your free Gemini API key below. It takes 30 seconds and costs nothing.");
-    }
-  } else {
-    setupBlock.style.display = 'none';
-    if (!aiChatHistory.length) {
-      const name = S.userName || 'you';
-      addAiBubble('assistant', `Hello${S.userName ? ', ' + S.userName : ''} ✦ It's Limaji. I know today's your ${S.energy || 'new'} energy day. Ask me anything — about your courses, how to stay motivated, what to focus on, or just talk.`);
-    }
-  }
-}
-
-function buildAiContext() {
-  const today = todayStr();
-  const task = getTodaysMainTask();
-  const cycleDay = S.cycleStartDate ? daysBetween(S.cycleStartDate, today) + 1 : 1;
-
-  // Course summary
-  const courseSummary = Object.values(S.courses)
-    .filter(c => c.lessons.length > 0)
-    .map(c => `${c.name}: ${c.current} of ${c.lessons.length} lessons done`)
-    .join(', ');
-
-  // Recent history summary
-  const recentDays = S.history.slice(0, 7);
-  const completedDays = recentDays.filter(d => d.mainDone).length;
-
-  return `You are Limaji, a warm, gentle, encouraging personal assistant built into a productivity app for a young woman named ${S.userName || 'Lye'}.
-Speak like a wise, caring friend — soft, honest, never preachy. Use the vintage, romantic tone of the app. Keep responses concise (2-4 sentences usually). Always refer to yourself as Limaji.
-Today's context:
-- Date: ${formatDateLong(today)} (IST)
-- Energy level today: ${S.energy || 'not yet set'}
-- Today's main task: ${task.title} (${task.type})
-- Main task done today: ${S.mainDone ? 'yes' : 'not yet'}
-- Day closed: ${S.dayClosed ? 'yes' : 'no'}
-- Cycle day: ${cycleDay} of 90
-- Last 7 days: ${completedDays}/7 main tasks completed
-- Courses: ${courseSummary || 'none loaded yet'}
-- Vlog ideas saved: ${S.vlogIdeas.length}
-- Daily note today: ${S.dailyNote || 'none'}
-Respond in English. Be personal, warm, and specific to her situation.`;
-}
-
-function addAiBubble(role, text) {
-  const msgs = document.getElementById('ai-messages');
-  const bubble = document.createElement('div');
-  bubble.className = `ai-bubble ${role}`;
-  bubble.textContent = text;
-  msgs.appendChild(bubble);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-async function sendAiMessage() {
-  const input = document.getElementById('ai-input');
-  const text = input.value.trim();
-  if (!text) return;
-
-  const key = getGeminiKey();
-  if (!key) {
-    document.getElementById('ai-setup-block').style.display = 'block';
-    showToast('Add your API key first ✦');
-    return;
-  }
-
-  input.value = '';
-  addAiBubble('user', text);
-
-  // Add to history
-  aiChatHistory.push({ role:'user', parts:[{ text }] });
-
-  // Thinking indicator
-  const msgs = document.getElementById('ai-messages');
-  const thinking = document.createElement('div');
-  thinking.className = 'ai-bubble thinking';
-  thinking.id = 'ai-thinking';
-  thinking.textContent = 'thinking…';
-  msgs.appendChild(thinking);
-  msgs.scrollTop = msgs.scrollHeight;
-
-  try {
-    const systemPrompt = buildAiContext();
-    const payload = {
-      system_instruction: { parts:[{ text: systemPrompt }] },
-      contents: aiChatHistory,
-      generationConfig: { maxOutputTokens: 300, temperature: 0.85 }
-    };
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`,
-      { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) }
-    );
-
-    const data = await res.json();
-    document.getElementById('ai-thinking')?.remove();
-
-    if (data.error) {
-      addAiBubble('error', `Error: ${data.error.message}`);
-      aiChatHistory.pop(); // remove failed user message
-      return;
-    }
-
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'I couldn't find words just now. Try again?';
-    aiChatHistory.push({ role:'model', parts:[{ text: reply }] });
-
-    // Keep history manageable (last 20 turns)
-    if (aiChatHistory.length > 20) aiChatHistory = aiChatHistory.slice(-20);
-
-    addAiBubble('assistant', reply);
-
-  } catch(e) {
-    document.getElementById('ai-thinking')?.remove();
-    addAiBubble('error', 'Something went wrong. Check your connection and try again.');
-    aiChatHistory.pop();
-  }
-}
-
-function clearAiChat() {
-  aiChatHistory = [];
-  document.getElementById('ai-messages').innerHTML = '';
-  buildAiScreen();
 }
 
 // ─────────────────────────────────────────────────────────────
